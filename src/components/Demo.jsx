@@ -21,6 +21,7 @@ const Demo = () => {
     const { data } = await getSummary({ articleUrl: article.url });
 
     if (data?.summary) {
+      console.log(data);
       const newArticle = { ...article, summary: data.summary };
       const updatedAllArticles = [newArticle, ...allArticles];
       setArticle(newArticle);
@@ -62,7 +63,7 @@ const Demo = () => {
 
         {/* Browser history */}
         <div className="flex flex-col gap-1 max-h-60 overflow-y-auto">
-          {allArticles.map((item, index) => {
+          {allArticles.map((item, index) => (
             <div
               key={`link-${index}`}
               onClick={() => setArticle(item)}
@@ -75,9 +76,11 @@ const Demo = () => {
                   className="w-[40%] h-[40%] object-contain"
                 />
               </div>
-              <p>{item.url}</p>
-            </div>;
-          })}
+              <p className="flex-1 font-satoshi text-blue-700 font-medium text-sm truncate">
+                {item.url}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
       {/* Display Results */}
