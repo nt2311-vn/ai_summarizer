@@ -4,13 +4,29 @@ import { useLazyGetSummaryQuery } from "../services/article";
 
 const Demo = () => {
   const [article, setArticle] = useState({ url: "", summary: "" });
+  const [allArticles, setAllArticles] = useState([]);
   const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
+  useEffect(() => {
+    const articlesFromLocalStorage = JSON.parse(
+      localStorage.getItem("articles"),
+    );
+
+    if (articlesFromLocalStorage) {
+      setAllArticles(articlesFromLocalStorage);
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
+    e.preventDefault();
     const { data } = await getSummary({ articleUrl: article.url });
 
     if (data?.summary) {
       const newArticle = { ...article, summary: data.summary };
+      const updatedAllArticles = [newArticle, ...allArticles];
       setArticle(newArticle);
+      setAllArticles(updatedAllArticles);
+
+      localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
     }
   };
   return (
@@ -43,7 +59,26 @@ const Demo = () => {
             ⌲
           </button>
         </form>
+
         {/* Browser history */}
+        <div className="flex flex-col gap-1 max-h-60 overflow-y-auto">
+          {allArticles.map((item, index) => {
+            <div
+              key={`link-${index}`}
+              onClick={() => setArticle(item)}
+              className="link_card"
+            >
+              <div className="copy_btn">
+                <img
+                  src={copy}
+                  alt="copy_icon"
+                  className="w-[40%] h-[40%] object-contain"
+                />
+              </div>
+              <p>{item.url}</p>
+            </div>;
+          })}
+        </div>
       </div>
       {/* Display Results */}
     </section>
